@@ -17,6 +17,7 @@ from firebase_admin import credentials
 from firebase_admin import storage
 from io import BytesIO
 import datetime
+from process_data import generar_contrato
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
