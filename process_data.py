@@ -21,12 +21,16 @@ import datetime
 anthropic = Anthropic(api_key=st.secrets["ANTHROPIC_API_KEY"])
 open_ai = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-cred = credentials.Certificate("key.json")
+firebase_creds = dict(st.secrets["firebase"])
+with open("firebase_credentials.json", "w") as f:
+    json.dump(firebase_creds, f)
+
+cred = credentials.Certificate("firebase_credentials.json")
 app = firebase_admin.initialize_app(cred, {'storageBucket':  'ayudasdemo.appspot.com'})
 bucket = storage.bucket()
 # Return the path, not the content
 
-model_anthropic = "claude-3-haiku-20240307"
+model_anthropic = "claude-3-5-sonnet-20240620"
 
 preguntas_memoria_proyecto = [
     {
@@ -432,6 +436,7 @@ Problem Statement Generado por IA:
   - Utiliza lenguaje profesional y persuasivo.
   - Resalta el valor añadido del proyecto para la empresa y la comunidad de Castilla-La Mancha.
 - Revisión y Refinamiento: Antes de finalizar, revisa la respuesta para verificar su coherencia, precisión y claridad. Haz ajustes necesarios para mejorar la presentación y el impacto de la respuesta.
+- No te inventes datos financieros, utiliza los datos del json.
 
 ## Contexto de respuestas previas:
 {context}
@@ -442,7 +447,8 @@ Pregunta actual:
 {pregunta['titulo']}
 {pregunta['descripcion']}
 
-Por favor, proporciona una respuesta detallada y profesional para esta pregunta, mejorando el ejemplo dado y utilizando la información proporcionada sobre la empresa y sus datos financieros. Asegúrate de que tu respuesta sea coherente con las respuestas anteriores y contribuya a una narrativa global convincente para la solicitud de ayuda. La respuesta será directamente introducida en el documento, así que no añadas comentarios adicionales.
+Por favor, proporciona una respuesta detallada y profesional para esta pregunta, mejorando el ejemplo dado y utilizando la información proporcionada sobre la empresa y sus datos financieros. Asegúrate de que tu respuesta sea coherente con las respuestas anteriores y contribuya a una narrativa global convincente para la solicitud de ayuda. 
+Solo devuelva la respuesta directa, sin comentarios. Por ejemplo... "Grupo Aire Limpio es...". Así no habrá que formatear más allá de tus respuestas.
 """
     return formatted_prompt
 
@@ -620,7 +626,7 @@ def generar_contrato(email, info_pdf, annual_accounts, thread_id):
     # Extract razon_social and create two separate JSON objects
     razon_social, financial_data_json_without_razon_social = extract_razon_social(financial_data_json)
 
-    financial_data_json_for_word['empresa']['razon_social'] = razon_social
+    financial_data_json_for_word['empresa']['[razon_social]'] = razon_social
 
     # Initialize an empty dictionary to store responses
     all_responses = {}
