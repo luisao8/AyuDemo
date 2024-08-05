@@ -1,0 +1,7 @@
+anthropic
+openai
+firebase-admin
+requests
+python-docx
+streamlit
+PyPDF2
